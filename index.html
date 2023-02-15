@@ -259,7 +259,7 @@
 		<button onclick="ifanyorreturn(prompt('Please paste from title until last line.',''),ImportFromDoc)">Import From Doc</button> <br>
 		<div id="editor"></div><br>
 		<canvas width="2146" height="0" style="display:none;"></canvas>
-		<button onclick="predraw()">Render</button> <button id="savebtn" onclick="if ((document.getElementsByClassName('drawer').length > 10) && (confirm('The theatre contains fewer than 10 lines. Are you sure you want to save?'))) {saveimg()}">Save</button> <button onclick="newtab()">New Tab</button><br>
+		<button onclick="predraw()">Render</button> <button id="savebtn" onclick="if ((document.getElementsByClassName('drawer').length < 10) && (confirm('The theatre contains fewer than 10 lines. Are you sure you want to save?'))) {saveimg()}">Save</button> <button onclick="newtab()">New Tab</button><br>
 		<button onclick="exports()">Export</button> <button onclick="ifanyorreturn(prompt('Please paste the contents to the textbox below.',''),JSONimport)">Import</button>
 		
 		<img id="preview" class="experimental2" width="2146" src="" style="display: none"><br><br><br>
