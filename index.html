@@ -264,6 +264,7 @@
 		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to open it in a new tab?') ) {newtab();}} else {newtab();}">New Tab</button><br>
 		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to export?') ) {exports();}} else {exports();}">Export</button>
 		<button onclick="ifanyorreturn(prompt('Please paste the contents to the textbox below.',''),JSONimport)">Import</button>
+		<h2>It is currently <span id="dateInJapan"></span> in Japan.</h2>
 		
 		<img id="preview" class="experimental2" width="2146" src="" style="display: none"><br><br><br>
 		<script>
@@ -299,6 +300,14 @@
 			var zh_simp = false;
 			var zh_nick = false;
 			var yohane = false;
+			const dateOptions = {
+					timeZone: "JST",
+					day: "numeric",
+					month: "long",
+					year: "numeric"
+				}
+			var date = new Date().toLocaleDateString("en-GB", dateOptions);
+			document.getElementById("dateInJapan").innerHTML = date;
 			var base = new Image;
 			base.onload = function(){
 				baseloaded = true;
@@ -1163,7 +1172,6 @@
 				loaded["custom_" + (extensions.custom.length - 1)] = true;	//no need to load
 				changeoptions();
 			}
-			
 		</script>
 	</body>
 </html>
