@@ -261,15 +261,17 @@
 		Language: <br class="break500"><input type="radio" onclick="changelang('jp')" name="lang">日本語 <input type="radio" onclick="changelang('en')" name="lang" checked>English<br>
 		Name Replace: <br class="break500"><input type="checkbox" onclick="toggleyo(this.checked)"><img src="img/icon/yoshiko.png" class="inline"><span id="yohanelang">(Yoshiko -> Yohane)</span> <span id="lang_zh" style="display:none"><span class="experimental" style="display: none"><input type="checkbox" onclick="togglesimp(this.checked)" name="lang"><span style="font-family: llastw">简化字（缺字）</span> </span><input type="checkbox" onclick="togglezh(this.checked)"><span style="font-family: llastw"><img src="img/icon/kotori.png" class="inline"><img src="img/icon/nico.png" class="inline">其他譯名</span> </span><br>
 		<button onclick="if (confirm('Are you sure to reset?')) {JSONimport(defaultd)}">Reset</button>
-		<button onclick="ifanyorreturn(prompt('Please paste from title until last line.',''),ImportFromDoc)">Import From Doc</button>
-		<button id="pasteClipboard" onclick="pasteClipboard()">📋</button><br>
+		<button id="pasteClipboard" onclick="pasteClipboard()">📋</button>
+		<button onclick="ifanyorreturn(prompt('Please paste from title until last line.',''),ImportFromDoc)">Import From Doc</button><br>
 		<div id="editor"></div><br>
 		<canvas width="2146" height="0" style="display:none;"></canvas>
 		<button onclick="predraw()">Render</button>
 		<button id="savebtn" onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to save?') ) {saveimg();}} else {saveimg();}">Save</button>
 		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to open it in a new tab?') ) {newtab();}} else {newtab();}">New Tab</button><br>
 		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to export?') ) {exports();}} else {exports();}">Export</button>
-		<button onclick="ifanyorreturn(prompt('Please paste the contents to the textbox below.',''),JSONimport)">Import</button>
+		<button onclick="ifanyorreturn(prompt('Please paste the contents to the textbox below.',''),JSONimport)">Import</button><br>
+		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to export?') ) {exportToClipboard();}} else {exportToClipboard();}">💾</button>
+		<button onclick="JSONimportClipboard()">📂</button><br>
 		<br>
 		<span id="dateInJapan"></span>
 
@@ -1130,6 +1132,65 @@
 				}
 			}
 
+			async function JSONimportClipboard(){
+				let s = await navigator.clipboard.readText();
+				if (!s){
+					alert("Clipboard is empty.");
+				} else {
+					let temp;
+					if (typeof s === "string") {
+						try {
+							temp = JSON.parse(s);
+						} catch (ex) {
+							alert("Wrong Format.");
+							return;
+						}
+					} else if (typeof s === "object") {
+						temp = s;
+					} else {
+						alert("Invalid Data.");
+						return;
+					};
+					if (Array.isArray(temp)) {
+						for (let i = 0; i < temp.length; ++i) {
+							if (temp[i]['n'] === undefined || !temp[i]['d'] === undefined){
+								alert("Invalid Data.");
+								return;
+							}
+						}
+						clearallext();
+						extensions = JSON.parse(JSON.stringify(extensions_default));
+						reset(temp);
+					} else if (typeof temp === "object"){
+						if (Array.isArray(temp["content"])){
+							for (let i = 0; i < temp["content"].length; ++i) {
+								if (temp["content"][i]['n'] === undefined || temp["content"][i]['d'] === undefined){
+									alert("Invalid Data.");
+									return;
+								}
+							}
+							if (temp["extensions"]) {
+								extensions = temp["extensions"];
+							} else {
+								clearallext();
+								extensions = JSON.parse(JSON.stringify(extensions_default));
+							}
+							reset(temp["content"]);
+							if (temp["title"]) {
+								id("title").value = temp["title"];
+							}
+							if (temp["header"]) {
+								id("header").value = temp["header"];
+							}
+						} else {
+							alert("Invalid Data.");
+						}
+					} else {
+						alert("Invalid Data.");
+					}
+				}
+			}
+
 			function exports(){
 				let wtitle = true;//confirm("Are the headers and titles attached?");
 				let output = "";
@@ -1156,6 +1217,28 @@
 				};
 			}
 			reset(defaultd);
+
+			function exportToClipboard(){
+				let wtitle = true;//confirm("Are the headers and titles attached?");
+				let output = "";
+				if (wtitle) {
+					let append = "";
+					if (id("header").value) {
+						append += '"header":"'+id("header").value+'",';
+					}
+					if (id("title").value) {
+						append += '"title":"'+id("title").value+'",';
+					}
+					if (JSON.stringify(extensions) !== '{"custom":[]}') {
+						append += '"extensions":'+JSON.stringify(extensions)+',';
+					}
+					output = '{' + append + '"content":' + JSON.stringify(actuald) + '}';
+				} else {
+					output = JSON.stringify(actuald);
+				};
+				navigator.clipboard.writeText(output);
+				alert('Copied theatre to clipboard.');
+			}
 						
 			function unicodeEscape(str) {
 				let code, pref = {1: '', 2: '', 3: '\\u0', 4: '\\u'};
