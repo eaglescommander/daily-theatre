@@ -246,9 +246,15 @@
 					background-color: white;
 				}
 			}
-			@-moz-document url-prefix() {
-				#pasteClipboard {
+			.hiddentoChrome {
 				display: none;
+			}
+			@-moz-document url-prefix() {
+				#chromiumOnly {
+					display: none;
+				}
+				.hiddentoChrome {
+					display:inline
 				}
 			}
 		</style>
@@ -261,7 +267,7 @@
 		Language: <br class="break500"><input type="radio" onclick="changelang('jp')" name="lang">日本語 <input type="radio" onclick="changelang('en')" name="lang" checked>English<br>
 		Name Replace: <br class="break500"><input type="checkbox" onclick="toggleyo(this.checked)"><img src="img/icon/yoshiko.png" class="inline"><span id="yohanelang">(Yoshiko -> Yohane)</span> <span id="lang_zh" style="display:none"><span class="experimental" style="display: none"><input type="checkbox" onclick="togglesimp(this.checked)" name="lang"><span style="font-family: llastw">简化字（缺字）</span> </span><input type="checkbox" onclick="togglezh(this.checked)"><span style="font-family: llastw"><img src="img/icon/kotori.png" class="inline"><img src="img/icon/nico.png" class="inline">其他譯名</span> </span><br>
 		<button onclick="if (confirm('Are you sure to reset?')) {JSONimport(defaultd)}">Reset</button>
-		<button id="pasteClipboard" onclick="pasteClipboard()">📋</button>
+		<button id="chromiumOnly" onclick="pasteClipboard()">📋</button>
 		<button onclick="ifanyorreturn(prompt('Please paste from title until last line.',''),ImportFromDoc)">Import From Doc</button><br>
 		<div id="editor"></div><br>
 		<canvas width="2146" height="0" style="display:none;"></canvas>
@@ -271,11 +277,9 @@
 		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to export?') ) {exports();}} else {exports();}">Export</button>
 		<button onclick="ifanyorreturn(prompt('Please paste the contents to the textbox below.',''),JSONimport)">Import</button><br>
 		<button onclick="if ((isIdolStory) && (document.getElementsByClassName('drawer').length < 10)) {if ( confirm('The theatre contains fewer than 10 lines. Are you sure you want to export?') ) {exportToClipboard();}} else {exportToClipboard();}">💾</button>
-		<button onclick="JSONimportClipboard()">📂</button>
+		<button id="chromiumOnly" onclick="JSONimportClipboard()">📂</button>
 		<br>
 		<span id="dateInJapan"></span>
-
-		<img id="preview" class="experimental2" width="2146" src="" style="display: none"><br><br><br>
 		<script>
 			function ifanyorreturn(x, callback) {
 				if (!x) return;
@@ -1024,53 +1028,47 @@
 			}
 			
 			async function pasteClipboard() {
-				const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-				if (isFirefox) {
-					alert("Firefox currently does not support directly reading the clipboard. Refer to MDN Web Docs for details.");
+				let s = await navigator.clipboard.readText();
+				if (!s) {
+					alert("Clipboard is empty.");
 				}
 				else {
-					let s = await navigator.clipboard.readText();
-					if (!s) {
-						alert("Clipboard is empty.");
-					}
-					else {
-						let lines =  s.split("\n");
-						let formattedLines = [];
+					let lines =  s.split("\n");
+					let formattedLines = [];
 
-						let firstLine = lines[0];
-						let title = firstLine.split("-").slice(1).join("-").trim();
+					let firstLine = lines[0];
+					let title = firstLine.split("-").slice(1).join("-").trim();
 
-						for (let i = 1; i < lines.length; i++) {
-							let line = lines[i];
-							if (line.trim() === '') {
-								continue;
-							}
-							let parts = line.split(":");
-							if (parts.length == 1) {
-								let name = "___"
-								let dialog = parts[0].trim();
-								formattedLines.push({
-									n:name,
-									d:dialog
-								});
-							} else {
-								let name = parts[0].trim().toLowerCase();
-								let dialog = parts.slice(1).join(":").trim();
-
-								let nameId = llshort.indexOf(name)
-
-								formattedLines.push({
-									n:nameId != -1 ? nameId : "???",
-									d:dialog
-								});
-							}
+					for (let i = 1; i < lines.length; i++) {
+						let line = lines[i];
+						if (line.trim() === '') {
+							continue;
 						}
+						let parts = line.split(":");
+						if (parts.length == 1) {
+							let name = "___"
+							let dialog = parts[0].trim();
+							formattedLines.push({
+								n:name,
+								d:dialog
+							});
+						} else {
+							let name = parts[0].trim().toLowerCase();
+							let dialog = parts.slice(1).join(":").trim();
 
-						clearallext();
-						reset(formattedLines);
-						id("title").value = title;
-						addquotes();
+							let nameId = llshort.indexOf(name)
+
+							formattedLines.push({
+								n:nameId != -1 ? nameId : "???",
+								d:dialog
+							});
+						}
 					}
+
+					clearallext();
+					reset(formattedLines);
+					id("title").value = title;
+					addquotes();
 				}
 			}
 
