@@ -296,12 +296,12 @@
 			var isIdolStory = false
 			var bgfilename = "vanilla.png"
 			var llname = {
-			"jp": ["穂乃果","絵里","ことり","海未","凛","真姫","希","花陽","にこ","千歌","梨子","果南","ダイヤ","曜","善子","花丸","鞠莉","ルビィ","歩夢","かすみ","しずく","果林","愛","彼方","せつ菜","エマ","璃奈","栞子","ランジュ","ミア"],
-			"en": ["Honoka", "Eli", "Kotori", "Umi", "Rin", "Maki", "Nozomi", "Hanayo", "Nico", "Chika", "Riko", "Kanan", "Dia", "You", "Yoshiko", "Hanamaru", "Mari", "Ruby", "Ayumu", "Kasumi", "Shizuku", "Karin", "Ai", "Kanata", "Setsuna", "Emma", "Rina", "Shioriko", "Lanzhu", "Mia"]
+			"jp": ["穂乃果","絵里","ことり","海未","凛","真姫","希","花陽","にこ","千歌","梨子","果南","ダイヤ","曜","善子","花丸","鞠莉","ルビィ","歩夢","かすみ","しずく","果林","愛","彼方","せつ菜","エマ","璃奈","栞子","ランジュ","ミア","花帆","さやか","梢","綴理","瑠璃乃","慈"],
+			"en": ["Honoka", "Eli", "Kotori", "Umi", "Rin", "Maki", "Nozomi", "Hanayo", "Nico", "Chika", "Riko", "Kanan", "Dia", "You", "Yoshiko", "Hanamaru", "Mari", "Ruby", "Ayumu", "Kasumi", "Shizuku", "Karin", "Ai", "Kanata", "Setsuna", "Emma", "Rina", "Shioriko", "Lanzhu", "Mia", "Kaho", "Sayaka", "Kozue", "Tsuzuri", "Rurino", "Megumi"]
 			};
 			var extensions_default = {"custom":[]};
 			var extensions = JSON.parse(JSON.stringify(extensions_default));
-			var llshort = ["honoka","eli","kotori","umi","rin","maki","nozomi","hanayo","nico","chika","riko","kanan","dia","you","yoshiko","hanamaru","mari","ruby","ayumu","kasumi","shizuku","karin","ai","kanata","setsuna","emma","rina","shioriko","lanzhu","mia"];
+			var llshort = ["honoka","eli","kotori","umi","rin","maki","nozomi","hanayo","nico","chika","riko","kanan","dia","you","yoshiko","hanamaru","mari","ruby","ayumu","kasumi","shizuku","karin","ai","kanata","setsuna","emma","rina","shioriko","lanzhu","mia","kaho","sayaka","kozue","tsuzuri","rurino","megumi"];
 			var loaded = "".padStart(llname["jp"].length," ").split("").map(a=>false);
 			var usage = "".padStart(llname["jp"].length," ").split("").map(a=>0);
 				usage["???"] = 0;
@@ -580,7 +580,7 @@
 							canvas.fillStyle = "#494949";	*/
 							if (getColor(actuald[i].n) != false) {
 								canvas.drawImage(generateBase(getColor(actuald[i].n)),0,0,150,150,133,y-5,148,148); //icon
-								canvas.fillText(getName(actuald[i].n), 280, y + 93);
+								canvas.fillText("getName(actuald[i].n)", 280, y + 93);
 							} else {
 								y -= 52;
 								canvas.fillText(getName(actuald[i].n), 133, y + 93);
@@ -588,7 +588,7 @@
 							}
 						} else {
 							canvas.drawImage(img[actuald[i].n],0,0,150,150,133,y-5,148,148); //icon
-							canvas.fillText(getName(actuald[i].n), 280, y + 93);
+							canvas.fillText(getName(actuald[i].n), 300, y + 93);
 						}
 					}
 					canvas.font = '46.3px ' + fonts;
