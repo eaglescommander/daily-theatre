@@ -10,7 +10,6 @@
 		<meta property="og:image" content="https://lldetail.ml/LLAS/mainichi/twitter.png">
 		<meta name="twitter:card" content="summary_large_image" />
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 		<link rel="manifest" href="/site.webmanifest">
@@ -320,10 +319,12 @@
 			var date = new Date().toLocaleDateString("en-GB", dateOptions);
 			document.getElementById("dateInJapan").innerHTML = date;
 			var base = new Image;
+
 			base.onload = function(){
 				baseloaded = true;
 			};
 			base.src = "base.png";
+			base.crossOrigin = "anonymous";
 			var bgimg = new Image;
 			bgimg.onload = function(){
 				bgimgloaded = true;
@@ -337,6 +338,7 @@
 			img = [];
 			/*var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 			if (iOS) document.documentElement.setAttribute("class", "iOS");*/
+			var baseloaded = false;
 			var bgimgloaded = false;
 			var separatorloaded = false;
 			canv = document.getElementsByTagName("canvas")[0];
@@ -352,9 +354,13 @@
 				};
 			};
 			function predraw(callback){
+				if (!baseloaded && extensions.custom.length > 0) {
+					alert("Base Image is not loaded for custom character. Please contact the developer.");
+				}
+
 				header = id("header").value?(lang=="zh"?id("header").value.replace(/毎日/g,"每日"):id("header").value):(ischi()?"每日劇場":"毎日劇場");
 				title = id("title").value?id("title").value:{"jp":"無題","en":"Untitled"}[lang];
-				if (baseloaded && bgimgloaded && separatorloaded && fontloaded){
+				if (bgimgloaded && separatorloaded && fontloaded){
 					//check images to be loaded
 					let hastoload = false;
 					for (let i = 0; i < actuald.length; ++i) {
@@ -387,9 +393,6 @@
 					if (!hastoload) draw(callback);
 				} else {
 					let notloaded = [];
-					if (!baseloaded) {
-						notloaded.push("Base Icon");
-					}
 					if (!bgimgloaded) {
 						notloaded.push("Background Image");
 					}
@@ -464,7 +467,7 @@
 					let temp = v.split("_");
 					if (extensions[temp[0]][temp[1]].i){
 						return "img/icon/" + temp[0] + "/" + extensions[temp[0]][temp[1]].i + ".png";
-					} else if (extensions[temp[0]][temp[1]].c != false){
+					} else if (baseloaded && extensions[temp[0]][temp[1]].c != false){
 						return generateBase(extensions[temp[0]][temp[1]].c, true);
 					} else {
 						return "Pixel.png";
@@ -494,13 +497,17 @@
 				cv.width = 150;
 				cv.height = 150;
 				let canvas = cv.getContext("2d");
+
 				canvas.clearRect(0, 0, cv.width, cv.height);
-				canvas.drawImage(base,0,0,150,150,0,0,150,150);
+				canvas.drawImage(base, 0, 0, 150, 150, 0, 0, 150, 150);
+
 				canvas.fillStyle = c;
 				canvas.globalCompositeOperation = "lighter";
-				canvas.fillRect(0,0,150,150); //icon
+				canvas.fillRect(0, 0, 150, 150); //icon
+
 				canvas.globalCompositeOperation = "destination-in";
-				canvas.drawImage(base,0,0,150,150,0,0,150,150);
+				canvas.drawImage(base, 0, 0, 150, 150, 0, 0, 150, 150);
+
 				if (url) {
 					return cv.toDataURL("image/png");
 				} else {
@@ -578,9 +585,9 @@
 							canvas.fillRect(133,y-5,148,148); //icon
 							canvas.globalCompositeOperation = "source-over";
 							canvas.fillStyle = "#494949";	*/
-							if (getColor(actuald[i].n) != false) {
+							if (baseloaded && getColor(actuald[i].n) != false) {
 								canvas.drawImage(generateBase(getColor(actuald[i].n)),0,0,150,150,133,y-5,148,148); //icon
-								canvas.fillText("getName(actuald[i].n)", 280, y + 93);
+								canvas.fillText(getName(actuald[i].n), 280, y + 93);
 							} else {
 								y -= 52;
 								canvas.fillText(getName(actuald[i].n), 133, y + 93);
